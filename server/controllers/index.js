@@ -226,28 +226,6 @@ const setNameDog = async (req, res) => {
 
 }
 
-const searchNameDog = async (req, res) => {
-  if (!req.query.name) {
-    return res.status(400).json({ error: 'Name is required to perform a search' });
-  }
-  let doc;
-  try {
-    doc = await Dog.findOne({ name: req.query.name }).exec();
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ error: 'Something went wrong' });
-  }
-
-  // If we do not find something that matches our search, doc will be empty.
-  if (!doc) {
-    return res.status(404).json({ error: 'No dogs found' });
-  }
-
-  // Otherwise, we got a result and will send it back to the user.
-  return res.json({ name: doc.name, breed: doc.breed, age: doc.age });
-
-}
-
 // Function to handle searching a cat by name.
 const searchName = async (req, res) => {
   /* When the user makes a POST request, bodyParser populates req.body with the parameters
@@ -359,6 +337,30 @@ const updateLastDog = (req, res) => {
   });
 }
 
+const searchNameDog = async (req, res) => {
+
+  if (!req.query.name) {
+    return res.status(400).json({ error: 'Name is required to perform a search' });
+  }
+
+  let doc;
+  try {
+    doc = await Dog.findOne({ name: req.query.name }).exec();
+  } catch (err) {
+    // If there is an error, log it and send the user an error message.
+    console.log(err);
+    return res.status(500).json({ error: 'Something went wrong' });
+  }
+
+  // If we do not find something that matches our search, doc will be empty.
+  if (!doc) {
+    return res.status(404).json({ error: 'No dogs found' });
+  }
+
+  // Otherwise, we got a result and will send it back to the user.
+  return res.json({ name: doc.name, breed: doc.breed, age: doc.age });
+}
+
 // A function to send back the 404 page.
 const notFound = (req, res) => {
   res.status(404).render('notFound', {
@@ -376,9 +378,9 @@ module.exports = {
   getName,
   setName,
   setNameDog,
-  searchNameDog,
   updateLastDog,
   updateLast,
   searchName,
+  searchNameDog,
   notFound,
 };
